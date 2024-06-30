@@ -1,31 +1,19 @@
-// @ts-nocheck
 // Copyright @ 2018-present xiejiahe. All rights reserved. MIT license.
 // See https://github.com/xjh22222228/nav
 
-import {
-  Component,
-  OnInit,
-  Input,
-  ViewChildren,
-  QueryList,
-} from '@angular/core'
+import { Component, OnInit, Input } from '@angular/core'
 import { NzMessageService } from 'ng-zorro-antd/message'
-import { getToken } from '../../utils/user'
+import { isLogin } from 'src/utils/user'
 import {
   setWebsiteList,
   copyText,
   deleteByWeb,
   getTextContent,
-  updateByWeb,
-} from '../../utils'
-import { websiteList } from '../../store'
-import { INavProps, ITagProp, INavFourProp } from '../../types'
-import * as __tag from '../../../data/tag.json'
-import { $t } from '../../locale'
-import { MoveSiteComponent } from '../move-site/index.component'
-import { settings } from 'src/store'
-
-const tagMap: ITagProp = (__tag as any).default
+} from 'src/utils'
+import { INavProps, IWebProps } from 'src/types'
+import { $t } from 'src/locale'
+import { settings, websiteList, tagMap } from 'src/store'
+import event from 'src/utils/mitt'
 
 @Component({
   selector: 'app-card',
@@ -33,20 +21,16 @@ const tagMap: ITagProp = (__tag as any).default
   styleUrls: ['./index.component.scss'],
 })
 export class CardComponent implements OnInit {
-  @Input() dataSource: INavFourProp
-  @Input() indexs: Array<number>
+  @Input() searchKeyword: string = ''
+  @Input() dataSource: IWebProps | Record<string, any> = {}
+  @Input() indexs: Array<number> = []
   @Input() cardStyle: string = 'standard'
-
-  @ViewChildren(MoveSiteComponent)
-  moveSiteChild: QueryList<MoveSiteComponent>
 
   $t = $t
   objectKeys = Object.keys
   settings = settings
   websiteList: INavProps[] = websiteList
-  isLogin: boolean = !!getToken()
-  showCreateModal = false
-  showMoveModal = false
+  isLogin: boolean = isLogin
   copyUrlDone = false
   copyPathDone = false
   tagMap = tagMap
@@ -55,7 +39,7 @@ export class CardComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  async copyUrl(e, type: number) {
+  async copyUrl(e: Event, type: number) {
     const w = this.dataSource
     const { origin, hash, pathname } = window.location
     const pathUrl = `${origin}${pathname}${hash}?q=${
@@ -75,12 +59,10 @@ export class CardComponent implements OnInit {
     this.copyPathDone = false
   }
 
-  toggleCreateModal() {
-    this.showCreateModal = !this.showCreateModal
-  }
-
-  toggleMoveModal() {
-    this.showMoveModal = !this.showMoveModal
+  openEditWebMoal() {
+    event.emit('CREATE_WEB', {
+      detail: this.dataSource,
+    })
   }
 
   onRateChange(n: number) {
@@ -88,39 +70,30 @@ export class CardComponent implements OnInit {
     setWebsiteList(this.websiteList)
   }
 
-  handleUpdateSiteOk(payload: INavFourProp) {
-    updateByWeb(
-      {
-        ...this.dataSource,
-        name: getTextContent(this.dataSource.name),
-        desc: getTextContent(this.dataSource.desc),
-      },
-      payload
-    )
-
-    const keys = Object.keys(payload)
-    for (let k of keys) {
-      this.dataSource[k] = payload[k]
-    }
-
-    this.message.success($t('_modifySuccess'))
-    this.toggleCreateModal()
-  }
-
   confirmDel() {
     deleteByWeb({
-      ...this.dataSource,
+      ...(this.dataSource as IWebProps),
       name: getTextContent(this.dataSource.name),
       desc: getTextContent(this.dataSource.desc),
     })
   }
 
-  handleMove() {
-    this.moveSiteChild.changes.subscribe(
-      (comps: QueryList<MoveSiteComponent>) => {
-        comps.first?.pushMoveSites([this.dataSource])
-      }
-    )
-    this.showMoveModal = true
+  openMoveWebModal() {
+    event.emit('MOVE_WEB', {
+      indexs: this.indexs,
+      data: [this.dataSource],
+    })
+  }
+
+  get getRate() {
+    if (!this.dataSource.rate) {
+      return null
+    }
+    const rate = Number(this.dataSource.rate)
+    // 0分不显示
+    if (!rate) {
+      return null
+    }
+    return rate.toFixed(1) + '分'
   }
 }

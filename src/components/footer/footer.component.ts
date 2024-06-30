@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Copyright @ 2018-present xiejiahe. All rights reserved. MIT license.
 // See https://github.com/xjh22222228/nav
 
@@ -12,10 +11,13 @@ import { isLogin } from 'src/utils/user'
   styleUrls: ['./footer.component.scss'],
 })
 export class FooterComponent {
-  footerContent: string = settings.footerContent.replace(
-    '${total}',
-    String(isLogin ? internal.loginViewCount : internal.userViewCount)
-  )
+  footerContent: string = settings.footerContent
+    .replace(
+      '${total}',
+      String(isLogin ? internal.loginViewCount : internal.userViewCount)
+    )
+    .replace('${hostname}', window.location.hostname)
+    .replace('${yearn}', String(new Date().getFullYear()))
 
-  @Input() className: string
+  @Input() className: string = ''
 }

@@ -22,19 +22,17 @@
 
 ## Preview
 
-**Themes**
-
-- [Sim preview](https://nav3.cn/#/sim)
-- [Light preview](https://nav3.cn/#/light)
-- [Side preview](https://nav3.cn/#/side)
-- [App preview](https://nav3.cn/#/app)
+- [https://nav3.cn/](https://nav3.cn/)
+- [https://faxian.vercel.app/](https://faxian.vercel.app/)
+- [https://xjh22222228.github.io/nav-web/](https://xjh22222228.github.io/nav-web/)
 
 ![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/1.png)
-![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/2.png)
+![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/8.png)
 ![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/3.png)
 ![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/4.png)
 ![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/6.png)
-![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/5.png)
+![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/9.png)
+![Preview](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/7.png)
 
 ## Features
 
@@ -98,8 +96,12 @@ The browser opens chrome://bookmarks/ to export the bookmarks to get the html fi
 
 ## Upgrade
 
-Before upgrading, please back up the `data` folder and `nav.config.ts` in the root directory, and replace them after the upgrade.
-Click the `Watch` button in the upper right corner to track the version upgrade for the first time.
+```bash
+git remote add upstream https://github.com/xjh22222228/nav.git
+git fetch upstream main
+git merge upstream/main --allow-unrelated-histories
+git push
+```
 
 ## Update log
 

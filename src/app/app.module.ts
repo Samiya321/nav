@@ -1,10 +1,12 @@
-import { NgModule } from '@angular/core'
+// Copyright @ 2018-present xiejiahe. All rights reserved. MIT license.
+// See https://github.com/xjh22222228/nav
+
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
 import { BrowserModule } from '@angular/platform-browser'
 
 import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { FormsModule } from '@angular/forms'
-import { HttpClientModule } from '@angular/common/http'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import { NzModalModule } from 'ng-zorro-antd/modal'
@@ -34,16 +36,16 @@ import { DragDropModule } from '@angular/cdk/drag-drop'
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox'
 import { NzPopoverModule } from 'ng-zorro-antd/popover'
 import { NzSliderModule } from 'ng-zorro-antd/slider'
-import { NzCarouselModule } from 'ng-zorro-antd/carousel'
 import { IconDefinition } from '@ant-design/icons-angular'
+import { NzSpinModule } from 'ng-zorro-antd/spin'
 
 import { NZ_I18N } from 'ng-zorro-antd/i18n'
 import { zh_CN } from 'ng-zorro-antd/i18n'
 
+import { SwiperComponent } from '../components/swiper/index.component'
 import { FixbarComponent } from '../components/fixbar/index.component'
 import { FooterComponent } from '../components/footer/footer.component'
 import { UploadComponent } from '../components/upload/index.component'
-import { EllipsisComponent } from '../components/ellipsis/index.component'
 import { IconGitComponent } from '../components/icon-git/icon-git.component'
 import { NoDataComponent } from '../components/no-data/no-data.component'
 import { SearchEngineComponent } from '../components/search-engine/search-engine.component'
@@ -53,10 +55,12 @@ import { ToolbarTitleWebComponent } from '../components/toolbar-title/index.comp
 import { WebListComponent } from '../components/web-list/index.component'
 import { LogoComponent } from '../components/logo/logo.component'
 import { CardComponent } from '../components/card/index.component'
-import { MoveSiteComponent } from '../components/move-site/index.component'
+import { MoveWebComponent } from '../components/move-web/index.component'
+import { WebMoreMenuComponent } from '../components/web-more-menu/index.component'
 
-import LightComponent from '../view/index/light/index.component'
-import SimComponent from '../view/index/sim/index.component'
+import LightComponent from '../view/light/index.component'
+import SuperComponent from '../view/super/index.component'
+import SimComponent from '../view/sim/index.component'
 import SystemComponent from '../view/system/index.component'
 import SystemInfoComponent from '../view/system/info/index.component'
 import SystemBookmarkComponent from '../view/system/bookmark/index.component'
@@ -64,10 +68,11 @@ import SystemAboutComponent from '../view/system/about/index.component'
 import SystemTagComponent from '../view/system/tag/index.component'
 import SystemSearchComponent from '../view/system/search/index.component'
 import SystemSettingComponent from '../view/system/setting/index.component'
+import CollectComponent from '../view/system/collect/index.component'
 import SystemWebComponent from '../view/system/web/index.component'
 import SystemAngleMarkComponent from '../view/system/angle-mark/index.component'
-import SideComponent from '../view/index/side/index.component'
-import ShortcutComponent from '../view/index/shortcut/index.component'
+import SideComponent from '../view/side/index.component'
+import ShortcutComponent from '../view/shortcut/index.component'
 import WebpComponent from '../view/app/default/app.component'
 
 import {
@@ -79,6 +84,7 @@ import {
   UploadOutline,
   MinusOutline,
   PlusOutline,
+  StopOutline,
 } from '@ant-design/icons-angular/icons'
 
 const icons: IconDefinition[] = [
@@ -90,12 +96,15 @@ const icons: IconDefinition[] = [
   UploadOutline,
   MinusOutline,
   PlusOutline,
+  StopOutline,
 ]
 
 @NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     AppComponent,
     LightComponent,
+    SuperComponent,
     SimComponent,
     SideComponent,
     ShortcutComponent,
@@ -106,13 +115,14 @@ const icons: IconDefinition[] = [
     SystemTagComponent,
     SystemSearchComponent,
     SystemSettingComponent,
+    CollectComponent,
     SystemAngleMarkComponent,
     SystemWebComponent,
     WebpComponent,
+    SwiperComponent,
     FixbarComponent,
     FooterComponent,
     UploadComponent,
-    EllipsisComponent,
     IconGitComponent,
     NoDataComponent,
     SearchEngineComponent,
@@ -122,11 +132,11 @@ const icons: IconDefinition[] = [
     WebListComponent,
     LogoComponent,
     CardComponent,
-    MoveSiteComponent,
+    MoveWebComponent,
+    WebMoreMenuComponent,
   ],
   imports: [
     BrowserAnimationsModule,
-    HttpClientModule,
     NzModalModule,
     NzInputModule,
     NzRadioModule,
@@ -152,7 +162,7 @@ const icons: IconDefinition[] = [
     NzCheckboxModule,
     NzPopoverModule,
     NzSliderModule,
-    NzCarouselModule,
+    NzSpinModule,
     NzSwitchModule,
     DragDropModule,
     BrowserModule,

@@ -7,9 +7,9 @@
   <p align="center">一个纯静态、支持SEO、在线编辑的强大导航网站，希望您会喜欢</p>
   <p align="center">内置收录多达 800+ 优质网站， 助您工作、学习和生活</p>
   <p align="center">
-    <a href="README_en.md">
+    <!-- <a href="README_en.md">
       <img src="https://img.shields.io/badge/lang-English-red.svg?longCache=true&style=flat-square">
-    </a>
+    </a> -->
     <img src="https://img.shields.io/github/v/release/xjh22222228/nav" />
     <a href="https://github.com/xjh22222228/nav/stargazers"><img src="https://img.shields.io/github/stars/xjh22222228/nav" alt="Stars"/></a>
     <img alt="Angular" src="https://img.shields.io/static/v1.svg?label=&message=Angular&style=flat-square&color=C82B38">
@@ -17,80 +17,92 @@
   </p>
 </p>
 
-<br />
-<br />
-
 ## 预览
 
-**主题**
-
-- [Sim 在线预览](https://nav3.cn/#/sim)
-- [Light 在线预览](https://nav3.cn/#/light)
-- [Side 在线预览](https://nav3.cn/#/side)
-- [App 在线预览](https://nav3.cn/#/app)
+- [https://nav3.cn/](https://nav3.cn/)
+- [https://faxian.vercel.app/](https://faxian.vercel.app/)
+- [https://xjh22222228.github.io/nav-web/](https://xjh22222228.github.io/nav-web/)
 
 ![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/1.png)
-![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/2.png)
+![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/8.png)
 ![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/3.png)
 ![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/4.png)
 ![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/6.png)
-![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/5.png)
+![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/9.png)
+![Preview](https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/nav/7.png)
 
 ## 特性
 
 `发现导航` 的理念就是做一款无需依赖后端服务既简单又方便，没有繁杂的配置和数据库等配置概念, 做到开箱即用。
 
-- 🍰 内置 `800+` 实用网站。
-- 🍰 支持 SEO。
-- 🍰 完全纯静态, 提供自动化部署功能。
-- 🍰 三叉树分类、结构清晰、分类清晰。
+- 🍰 内置 `800+` 优质网站
+- 🍰 支持 [码云 Gitee](https://gitee.com/xiejiahe/nav)
+- 🍰 支持用户提交收录
+- 🍰 丰富的资源配置系统
+- 🍰 支持 SEO 搜索引擎
+- 🍰 完全纯静态, 提供自动化部署功能
+- 🍰 三叉树分类、结构清晰、分类清晰
 - 🍰 支持一个网站关联多个网址
-- 🍰 颜值与简约并存，不再是杀马特时代。
-- 🍰 完全开源，轻松定制化。
-- 🍰 支持多种浏览模式，创新。
-- 🍰 支持足迹记忆。
-- 🍰 支持移动端浏览。
-- 🍰 支持搜索查询。
-- 🍰 支持自定义引擎搜索。
-- 🍰 多款主题切换。
-- 🍰 支持暗黑模式。
-- 🍰 支持后台管理, 无需部署。
+- 🍰 颜值与简约并存，不再是杀马特时代
+- 🍰 完全开源，轻松定制化
+- 🍰 支持多种浏览模式，创新
+- 🍰 支持足迹记忆
+- 🍰 支持多种搜索查询
+- 🍰 支持自定义引擎搜索
+- 🍰 多款高颜值主题切换
+- 🍰 支持暗黑模式
+- 🍰 支持后台管理, 无需部署
 - 🍰 支持从 Chrome 书签导入
 - 🍰 多种 Loading 加载动画
-- 🍰 多种 卡片风格
+- 🍰 多种卡片风格设计
 - 🍰 支持检测网站存活状态
+- 🍰 支持配置仅自己可见
+- 🍰 强大的响应式系统
+- 🍰 自动抓取网站图标/名称/描述
+
+## 可以干嘛
+
+- 公司部署，内部系统网站，不需要员工收藏各种链接
+- 做为个人书签，有些功能浏览器是没有的
+- 个人导航网站，分享、价值、发现
 
 ## 部署
 
-像数 `321` 一样简单。
+零成本部署，像数 `321` 一样简单。
 
-#### 方式一(gh-pages 免费)
+#### gh-pages (免费)
 
-1、Fork 当前项目。
+1、右上角点击 `Fork` 当前项目。
 
-2、[https://github.com/settings/tokens](https://github.com/settings/tokens) 申请 token, 勾选相应的权限, 如果不懂就全部选中，复制并保存 Token。
+2、[https://github.com/settings/tokens/new](https://github.com/settings/tokens/new) 申请 `token`, 勾选相应的权限, 如果不懂就全部选中，复制并保存 Token；[Gitee 申请点这里](https://gitee.com/profile/personal_access_tokens/new)
 
-3、https://github.com/用户名/nav/settings/secrets/actions/new 添加申请的 token， name 填写 `TOKEN` 大写。
+3、https://github.com/你的用户名/nav/settings/secrets/actions/new 添加申请的 token， name 填写 `TOKEN` 大写。
 
-4、打开 https://github.com/用户名/nav/actions 根据流程操作
+4、打开 https://github.com/你的用户名/nav/actions 开启 action 自动部署
 
-5、务必修改项目配置文件 [nav.config.ts](nav.config.ts)
+5、修改项目根目录配置文件 [nav.config.ts](nav.config.ts) 只需要修改仓库地址
 
-6、5 分钟后打开 https://用户名.github.io/nav 就能看到一个非常强大的导航网站了。
+6、打开 https://你的用户名.github.io/nav 就能看到一个非常强大的导航网站了。
 
-#### 推荐方式二(Vercel 免费)
+#### Netlify 推荐(免费)
 
-和方式一的步骤一样，除了第 4 步不用。
-
-具体使用跟着步骤走即可 [https://github.com/apps/vercel](https://github.com/apps/vercel)
-
-#### 推荐方式三(Netlify 免费)
+作者目前使用，速度较快
 
 [https://www.netlify.com/](https://www.netlify.com/)
 
-#### 关于自有部署
+#### Vercel 推荐(免费)
+
+国内访问速度较慢，建议测试后使用
+
+[https://github.com/apps/vercel](https://github.com/apps/vercel)
+
+#### 关于自有部署（不建议）
 
 如果你想部署到自己的服务器，你需要在后台配置补充`请求地址`当每次发生保存时会请求 GET，你需要使用熟悉的任何编程语言写一个服务执行 `git pull && npm run build` 用服务器指向导出的`dist`目录
+
+#### 其他
+
+如果您有更好的部署方式，请给我们提 PR
 
 ## 后台
 
@@ -98,7 +110,7 @@
 
 ## 书签导入
 
-支持从 Chrome 书签导入（WebKit 内核应该都是支持的~），会自动检测满足三级分类的导航，其他一律设为未分类：
+自动检测满足三级分类导航，其他一律设为未分类：
 
 ![](https://raw.githubusercontent.com/xjh22222228/public/gh-pages/nav/import.png)
 
@@ -106,9 +118,18 @@
 
 ## 升级
 
-在升级之前请备份根目录下的 `data` 文件夹和 `nav.config.ts`, 升级完后替换即可。
+将你的仓库克隆下来执行以下命令
 
-点击右上角 `Watch` 按钮第一时间跟踪版本升级。
+```bash
+git pull
+git remote add upstream https://github.com/xjh22222228/nav.git
+git fetch upstream main
+git merge upstream/main --allow-unrelated-histories --no-edit
+git push
+
+# 或者执行
+npm run update
+```
 
 ## 更新日志
 
@@ -164,11 +185,12 @@ Thank you for your [contribution](https://github.com/xjh22222228/nav/issues), me
 <img src="https://cdn.jsdelivr.net/gh/xjh22222228/public@gh-pages/img/32.png" width="600">
 
 感谢您的认可：
-| 姓名 | 支持金额 |
+| ID | 支持金额 |
 | --------------------------------------- |----------- |
-| [aiyou9](https://github.com/aiyou9) | ￥ 50.00、￥ 50.00 |
+| [aiyou9](https://github.com/aiyou9) | ￥ 100 |
 | [lastares](https://github.com/lastares) | ￥ 25.00 |
 | [MrJxySteven](https://github.com/MrJxySteven) | ￥ 20.00 |
+| [admol](https://github.com/admol) | ￥ 6.66 |
 | 路人甲 | ￥ 50.00 |
 
 ## License

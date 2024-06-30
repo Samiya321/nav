@@ -28,10 +28,11 @@
   </label>
 
   <div class="tip2">
-    拖动可排序；
+    {{ $t('_dragSort') }}；
     <span
       >上次检测出
-      {{ settings.errorUrlCount || 0 }} 个网站链接失效，具体到管理网站查看</span
+      {{ settings.errorUrlCount || 0 }}
+      个网站链接失效，具体到管理网站查看，如需再次检测状态直接点保存触发事件即可。</span
     >
   </div>
 
@@ -98,7 +99,7 @@
                 nzTheme="outline"
               ></i>
             </td>
-            <td>{{ formatDate(data.createdAt) }}</td>
+            <td>{{ data.createdAt }}</td>
             <td>
               <a (click)="handleEditBtn(data, idx)">{{ $t('_edit') }}</a>
               <a
@@ -194,7 +195,7 @@
                 nzTheme="outline"
               ></i>
             </td>
-            <td>{{ formatDate(data.createdAt) }}</td>
+            <td>{{ data.createdAt }}</td>
             <td>
               <a (click)="handleEditBtn(data, idx)">{{ $t('_edit') }}</a>
               <a
@@ -305,7 +306,7 @@
                 nzTheme="outline"
               ></i>
             </td>
-            <td>{{ formatDate(data.createdAt) }}</td>
+            <td>{{ data.createdAt }}</td>
             <td>
               <a (click)="handleEditBtn(data, idx)">{{ $t('_edit') }}</a>
               <a
@@ -328,7 +329,7 @@
         nzShowSearch
         [nzPlaceHolder]="$t('_sel1')"
         (ngModelChange)="hanldeOneSelect($event)"
-        style="width: 200px"
+        style="width: 150px"
       >
         <nz-option
           *ngFor="let item of websiteList"
@@ -343,7 +344,7 @@
         nzShowSearch
         [nzPlaceHolder]="$t('_sel2')"
         (ngModelChange)="hanldeTwoSelect($event)"
-        style="width: 200px; margin-left: 15px"
+        style="width: 150px; margin-left: 15px"
       >
         <nz-option
           *ngFor="let item of twoTableData"
@@ -358,7 +359,7 @@
         nzShowSearch
         [nzPlaceHolder]="$t('_sel3')"
         (ngModelChange)="hanldeThreeSelect($event)"
-        style="width: 200px; margin-left: 15px"
+        style="width: 150px; margin-left: 15px"
       >
         <nz-option
           *ngFor="let item of threeTableData"
@@ -371,19 +372,19 @@
       <button
         nz-button
         nzType="primary"
-        (click)="toggleCreateWebModal()"
+        (click)="openCreateWebModal()"
         style="margin-left: 20px"
       >
         {{ $t('_addWeb') }}
       </button>
-      <!-- <button
+      <button
         nz-button
         nzType="primary"
         (click)="getAllErrorWeb()"
         style="margin-left: 20px"
       >
         检索所有异常网站
-      </button> -->
+      </button>
       <a
         nz-popconfirm
         [nzPopconfirmTitle]="$t('_confirmDel')"
@@ -414,6 +415,7 @@
               [nzChecked]="checkedAll"
               (nzCheckedChange)="onAllChecked($event, 4)"
             ></th>
+            <th nzWidth="60px" class="center">{{ $t('_action') }}</th>
             <th nzWidth="70px">状态</th>
             <th nzWidth="80px">{{ $t('_icon') }}</th>
             <th nzWidth="100px">{{ $t('_webName') }}</th>
@@ -421,8 +423,7 @@
             <th nzWidth="120px">{{ $t('_onlyOwnVisible') }}</th>
             <th nzWidth="300px">{{ $t('_webDesc') }}</th>
             <th nzWidth="300px">分类位置</th>
-            <th nzWidth="160px">{{ $t('_createAt') }}</th>
-            <th>{{ $t('_action') }}</th>
+            <th>{{ $t('_createAt') }}</th>
           </tr>
         </thead>
         <tbody cdkDropList (cdkDropListDropped)="dropWebsite($event)">
@@ -431,6 +432,20 @@
               [nzChecked]="setOfCheckedId.has(data.name)"
               (nzCheckedChange)="onItemChecked(data.name, $event)"
             ></td>
+            <td class="center">
+              <a (click)="openEditModal(data)">{{ $t('_edit') }}</a>
+              <div>
+                <a (click)="openMoveWebModal(data, idx)">{{ $t('_move') }}</a>
+              </div>
+              <a
+                nz-popconfirm
+                [nzPopconfirmTitle]="$t('_confirmDel')"
+                nzPopconfirmPlacement="bottom"
+                (nzOnConfirm)="handleConfirmDelWebsite(data, idx)"
+              >
+                <a nz-button nzType="link" nzDanger>{{ $t('_del') }}</a>
+              </a>
+            </td>
             <td>
               <span
                 *ngIf="data.ok === false"
@@ -450,12 +465,13 @@
             <td>
               <nz-tag
                 *ngFor="let key of objectKeys(data.urls || {})"
-                [nzColor]="tagMap[key].color || '#2db7f5'"
+                [nzColor]="(tagMap[key] && tagMap[key].color) || '#1890ff'"
+                style="margin-bottom: 5px"
               >
                 <a
                   [href]="data.urls?.[key] || 'javascript:void(0)'"
                   [target]="data.urls?.[key] ? '_blank' : ''"
-                  >{{ key }}</a
+                  >{{ tagMap[key] && tagMap[key].name }}</a
                 >
               </nz-tag>
             </td>
@@ -471,37 +487,13 @@
               <pre class="desc">{{ data.desc }}</pre>
             </td>
             <th nzWidth="300px">{{ data.breadcrumb }}</th>
-            <td>{{ formatDate(data.createdAt) }}</td>
-            <td>
-              <a
-                (click)="
-                  toggleCreateWebModal(); websiteDetail = data; editIdx = idx
-                "
-                >{{ $t('_edit') }}</a
-              >
-              <a
-                nz-popconfirm
-                [nzPopconfirmTitle]="$t('_confirmDel')"
-                nzPopconfirmPlacement="bottom"
-                (nzOnConfirm)="handleConfirmDelWebsite(idx)"
-              >
-                <a nz-button nzType="link" nzDanger>{{ $t('_del') }}</a>
-              </a>
-            </td>
+            <td>{{ data.createdAt }}</td>
           </tr>
         </tbody>
       </nz-table>
     </nz-tab>
   </nz-tabset>
 </div>
-
-<app-create-web
-  [visible]="showCreateWebModal"
-  (onCancel)="toggleCreateWebModal()"
-  (onOk)="onOkCreateWeb($event)"
-  [detail]="websiteDetail"
->
-</app-create-web>
 
 <nz-modal
   [(nzVisible)]="showCreateModal"
@@ -512,9 +504,7 @@
   <ng-container *nzModalContent>
     <form nz-form [formGroup]="validateForm">
       <nz-form-item>
-        <nz-form-label [nzSpan]="6" nzRequired>{{
-          $t('_tagName')
-        }}</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired>分类名称</nz-form-label>
         <nz-form-control [nzSpan]="18" [nzErrorTip]="$t('_requiredName')">
           <input
             formControlName="title"
@@ -535,13 +525,13 @@
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="6">IconFont {{ $t('_icon') }}</nz-form-label>
+        <nz-form-label [nzSpan]="6">图标地址</nz-form-label>
         <nz-form-control [nzSpan]="18">
           <nz-input-group>
             <input
               formControlName="icon"
               nz-input
-              placeholder="用于某些主题侧边栏icon"
+              placeholder="用于某些主题icon"
             />
           </nz-input-group>
         </nz-form-control>

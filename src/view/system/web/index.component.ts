@@ -4,20 +4,20 @@
 
 import { Component } from '@angular/core'
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
-import { INavProps, INavTwoProp, INavThreeProp, INavFourProp } from 'src/types'
-import { websiteList, settings } from 'src/store'
-import { getToken } from 'src/utils/user'
+import { INavProps, INavTwoProp, INavThreeProp, IWebProps } from 'src/types'
+import { websiteList, settings, tagMap } from 'src/store'
+import { isLogin } from 'src/utils/user'
 import { NzMessageService } from 'ng-zorro-antd/message'
 import { NzModalService } from 'ng-zorro-antd/modal'
 import { NzNotificationService } from 'ng-zorro-antd/notification'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
-import { setWebsiteList, addZero } from 'src/utils'
+import { setWebsiteList, deleteByWeb, getTextContent } from 'src/utils'
 import { updateFileContent } from 'src/services'
 import { DB_PATH, STORAGE_KEY_MAP } from 'src/constants'
 import config from '../../../../nav.config'
 import { $t } from 'src/locale'
-import { tagMap } from 'src/store'
 import { saveAs } from 'file-saver'
+import event from 'src/utils/mitt'
 
 @Component({
   selector: 'app-admin',
@@ -30,9 +30,8 @@ export default class WebpComponent {
   validateForm!: FormGroup
   websiteList: INavProps[] = websiteList
   gitRepoUrl = config.gitRepoUrl
-  isLogin = !!getToken()
+  isLogin = isLogin
   showCreateModal = false
-  showCreateWebModal = false
   syncLoading = false
   uploading = false
   tabActive = 0
@@ -43,11 +42,10 @@ export default class WebpComponent {
   threeSelect = ''
   tagMap = tagMap
   objectKeys = Object.keys
-  websiteDetail: any = []
 
   twoTableData: INavTwoProp[] = []
   threeTableData: INavThreeProp[] = []
-  websiteTableData: INavFourProp[] = []
+  websiteTableData: IWebProps[] = []
 
   checkedAll = false
   setOfCheckedId = new Set<string>()
@@ -88,6 +86,9 @@ export default class WebpComponent {
     }
     r(this.websiteList)
     this.websiteTableData = websiteTableData
+    if (websiteTableData.length <= 0) {
+      this.message.success('未发现异常网站！')
+    }
   }
 
   onAllChecked(checked: boolean, type: 1 | 2 | 3 | 4) {
@@ -189,26 +190,22 @@ export default class WebpComponent {
 
       case 4:
         {
+          const deleteData = []
           this.websiteTableData = this.websiteTableData.filter((item) => {
-            return !this.setOfCheckedId.has(item.name)
-          })
-          const idx = this.websiteList.findIndex(
-            (item) => item.title === this.oneSelect
-          )
-          if (idx >= 0) {
-            const idx2 = this.websiteList[idx].nav.findIndex(
-              (item) => item.title === this.twoSelect
-            )
-            if (idx2 >= 0) {
-              const idx3 = this.websiteList[idx].nav[idx2].nav.findIndex(
-                (item) => item.title === this.threeSelect
-              )
-              if (idx3 >= 0) {
-                this.websiteList[idx].nav[idx2].nav[idx3].nav =
-                  this.websiteTableData
-              }
+            const has = !this.setOfCheckedId.has(item.name)
+            if (!has) {
+              deleteData.push(item)
             }
-          }
+            return has
+          })
+          deleteData.forEach((item) => {
+            deleteByWeb({
+              ...item,
+              name: getTextContent(item.name),
+              desc: getTextContent(item.desc),
+            })
+          })
+          this.message.success($t('_delSuccess'))
         }
         break
     }
@@ -223,9 +220,10 @@ export default class WebpComponent {
       nzOnOk: () => {
         this.message.success($t('_actionSuccess'))
         window.localStorage.removeItem(STORAGE_KEY_MAP.website)
+        window.localStorage.removeItem(STORAGE_KEY_MAP.s_url)
         setTimeout(() => {
           window.location.reload()
-        }, 1500)
+        }, 500)
       },
     })
   }
@@ -262,13 +260,46 @@ export default class WebpComponent {
     history.go(-1)
   }
 
-  toggleCreateWebModal() {
+  openMoveWebModal(data: IWebProps, index: number) {
+    const oneIndex = this.websiteList.findIndex(
+      (item) => item.title === this.oneSelect
+    )
+    const twoIndex = this.twoTableData.findIndex(
+      (item) => item.title === this.twoSelect
+    )
+    const threeIndex = this.threeTableData.findIndex(
+      (item) => item.title === this.threeSelect
+    )
+    event.emit('MOVE_WEB', {
+      indexs: [oneIndex, twoIndex, threeIndex, index],
+      data: [data],
+    })
+  }
+
+  openCreateWebModal() {
     if (this.tabActive === 3 && !this.threeSelect) {
       return this.message.error($t('_sel3'))
     }
+    const oneIndex = this.websiteList.findIndex(
+      (item) => item.title === this.oneSelect
+    )
+    const twoIndex = this.twoTableData.findIndex(
+      (item) => item.title === this.twoSelect
+    )
+    const threeIndex = this.threeTableData.findIndex(
+      (item) => item.title === this.threeSelect
+    )
+    event.emit('CREATE_WEB', {
+      oneIndex,
+      twoIndex,
+      threeIndex,
+    })
+  }
 
-    this.websiteDetail = null
-    this.showCreateWebModal = !this.showCreateWebModal
+  openEditModal(detail: IWebProps) {
+    event.emit('CREATE_WEB', {
+      detail,
+    })
   }
 
   toggleCreateModal() {
@@ -285,27 +316,6 @@ export default class WebpComponent {
     this.isEdit = false
     this.showCreateModal = !this.showCreateModal
     this.validateForm.reset()
-  }
-
-  onOkCreateWeb(payload: INavFourProp) {
-    // 编辑
-    if (this.websiteDetail) {
-      this.websiteTableData[this.editIdx] = payload
-    } else {
-      // 创建
-      const exists = this.websiteTableData.some(
-        (item) => item.name === payload.name
-      )
-      if (exists) {
-        return this.message.error($t('_repeatAdd'))
-      }
-
-      this.websiteTableData.unshift(payload)
-      this.message.success($t('_addSuccess'))
-    }
-
-    setWebsiteList(this.websiteList)
-    this.toggleCreateWebModal()
   }
 
   onTabChange(index?: number) {
@@ -376,10 +386,14 @@ export default class WebpComponent {
   }
 
   // 删除网站
-  handleConfirmDelWebsite(idx: number) {
+  handleConfirmDelWebsite(data: any, idx: number) {
     this.websiteTableData.splice(idx, 1)
+    deleteByWeb({
+      ...data,
+      name: getTextContent(data.name),
+      desc: getTextContent(data.desc),
+    })
     this.message.success($t('_delSuccess'))
-    setWebsiteList(this.websiteList)
   }
 
   hanldeOneSelect(value: any) {
@@ -413,12 +427,13 @@ export default class WebpComponent {
   }
 
   handleEditBtn(data: any, editIdx: number) {
-    let { title, icon, name } = data
+    let { title, icon, name, ownVisible } = data
     this.toggleCreateModal()
     this.isEdit = true
     this.editIdx = editIdx
     this.validateForm.get('title')!.setValue(title || name || '')
     this.validateForm.get('icon')!.setValue(icon || '')
+    this.validateForm.get('ownVisible')!.setValue(!!ownVisible)
   }
 
   handleSync() {
@@ -437,12 +452,6 @@ export default class WebpComponent {
           .then(() => {
             this.message.success($t('_syncSuccessTip'))
           })
-          .catch((res) => {
-            this.notification.error(
-              `${$t('_error')}: ${res?.response?.status ?? 401}`,
-              $t('_syncFailTip')
-            )
-          })
           .finally(() => {
             this.syncLoading = false
           })
@@ -451,7 +460,7 @@ export default class WebpComponent {
   }
 
   handleOk() {
-    const createdAt = new Date().toISOString()
+    const createdAt = new Date().toString()
 
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty()
@@ -460,13 +469,21 @@ export default class WebpComponent {
 
     let { title, icon, ownVisible } = this.validateForm.value
 
-    if (!title) return
+    if (!title || !title.trim()) {
+      this.message.error('分类名称不能为空')
+      return
+    }
+    title = title.trim()
 
     if (this.isEdit) {
       switch (this.tabActive) {
         // 编辑一级分类
         case 0:
           {
+            const exists = this.websiteList.some((item) => item.title === title)
+            if (exists && this.websiteList[this.editIdx].title !== title) {
+              return this.message.error(`${$t('_repeatAdd')} "${title}"`)
+            }
             this.websiteList[this.editIdx].title = title
             this.websiteList[this.editIdx].icon = icon
             this.websiteList[this.editIdx].ownVisible = ownVisible
@@ -476,6 +493,12 @@ export default class WebpComponent {
         // 编辑二级分类
         case 1:
           {
+            const exists = this.twoTableData.some(
+              (item) => item.title === title
+            )
+            if (exists && this.twoTableData[this.editIdx].title !== title) {
+              return this.message.error(`${$t('_repeatAdd')} "${title}"`)
+            }
             this.twoTableData[this.editIdx].title = title
             this.twoTableData[this.editIdx].icon = icon
             this.twoTableData[this.editIdx].ownVisible = ownVisible
@@ -485,6 +508,12 @@ export default class WebpComponent {
         // 编辑三级分类
         case 2:
           {
+            const exists = this.threeTableData.some(
+              (item) => item.title === title
+            )
+            if (exists && this.threeTableData[this.editIdx].title !== title) {
+              return this.message.error(`${$t('_repeatAdd')} "${title}"`)
+            }
             this.threeTableData[this.editIdx].title = title
             this.threeTableData[this.editIdx].icon = icon
             this.threeTableData[this.editIdx].ownVisible = ownVisible
@@ -500,7 +529,7 @@ export default class WebpComponent {
           {
             const exists = this.websiteList.some((item) => item.title === title)
             if (exists) {
-              return this.message.error($t('_repeatAdd'))
+              return this.message.error(`${$t('_repeatAdd')} "${title}"`)
             }
 
             this.websiteList.unshift({
@@ -520,7 +549,7 @@ export default class WebpComponent {
               (item) => item.title === title
             )
             if (exists) {
-              return this.message.error($t('_repeatAdd'))
+              return this.message.error(`${$t('_repeatAdd')} "${title}"`)
             }
 
             this.twoTableData.unshift({
@@ -540,7 +569,7 @@ export default class WebpComponent {
               (item) => item.title === title
             )
             if (exists) {
-              return this.message.error($t('_repeatAdd'))
+              return this.message.error(`${$t('_repeatAdd')} "${title}"`)
             }
 
             this.threeTableData.unshift({
@@ -559,22 +588,5 @@ export default class WebpComponent {
     this.validateForm.reset()
     this.toggleCreateModal()
     setWebsiteList(this.websiteList)
-  }
-
-  get formatDate() {
-    return function (d: any): string {
-      if (!d) {
-        return d
-      }
-      const date = new Date(d)
-      const year = date.getFullYear()
-      const month = date.getMonth() + 1
-      const day = date.getDate()
-      const hours = date.getHours()
-      const minutes = date.getMinutes()
-      return `${year}-${addZero(month)}-${addZero(day)} ${addZero(
-        hours
-      )}:${addZero(minutes)}`
-    }
   }
 }
